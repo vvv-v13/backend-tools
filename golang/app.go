@@ -10,6 +10,7 @@ import (
 
 func main() {
 
+        // PostgreSQL Connection pool
 	db, err := sql.Open("postgres", "user=staging dbname=staging sslmode=disable port=5432 host=localhost password=")
 	if err != nil {
 		panic(err)
@@ -19,6 +20,7 @@ func main() {
 	db.SetMaxOpenConns(5)
 	defer db.Close()
 
+        // Http server
 	server := &http.Server{
 		Addr:           ":8000",
 		Handler:        nil,
@@ -27,7 +29,9 @@ func main() {
 		MaxHeaderBytes: 1 << 20,
 	}
 
+        // Routing
 	http.Handle("/psql/select", psqlSelectHandler(db))
+	http.Handle("/psql/insert", psqlInsertHandler(db))
 
 	log.Println("Server listen on 8000")
 	panic(server.ListenAndServe())
