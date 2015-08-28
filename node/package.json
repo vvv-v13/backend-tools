@@ -1,0 +1,25 @@
+{
+  "name": "express-srv",
+  "version": "0.0.1",
+  "description": "NodeJs Backend",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "",
+    "url": ""
+  },
+  "author": "Vitalii Pan'ko",
+  "license": "BSD2",
+  "bugs": {
+    "url": ""
+  },
+  "homepage": "",
+  "dependencies": {
+    "express": "^4.13.3",
+    "pg": "^4.4.1",
+    "q": "^1.4.1"
+  }
+}
