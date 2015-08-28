@@ -3,22 +3,23 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
-	_ "github.com/lib/pq"
+	"github.com/lib/pq"
 	"log"
 	"net/http"
 	"time"
 )
 
 type Model struct {
-	Id   int       `json:"id"`
-	Uid  string    `json:"uid"`
-	Date time.Time `json:"date"`
-	Text string    `json:"text"`
-	Int  int       `json:"int"`
-	Float  float32   `json:"float"`
-	Bool  bool   `json:"bool"`
+	Id       int       `json:"id"`
+	Uid      string    `json:"uid"`
+	DateTime time.Time `json:"time"`
+	Date     time.Time `json:"date"`
+	DateText string    `json:"dateText"`
+	Text     string    `json:"text"`
+	Int      int       `json:"int"`
+	Float    float32   `json:"float"`
+	Bool     bool      `json:"bool"`
 }
-
 
 // PostgreSQL SELECT handler
 func psqlSelectHandler(db *sql.DB) http.Handler {
@@ -29,7 +30,7 @@ func psqlSelectHandler(db *sql.DB) http.Handler {
 			return
 		}
 
-		rows, err := db.Query(`SELECT id, uid, bool_value, int_value, text_value FROM models LIMIT $1`, 5)
+		rows, err := db.Query(`SELECT id, uid, bool_value, int_value, text_value, date_time, date FROM models LIMIT $1`, 5)
 
 		if err != nil {
 			log.Println(err)
@@ -44,23 +45,25 @@ func psqlSelectHandler(db *sql.DB) http.Handler {
 		for rows.Next() {
 			model := new(Model)
 			var uid, text_value sql.NullString
-                        var int_value sql.NullInt64
-                        var bool_value sql.NullBool
-
-			err := rows.Scan(&model.Id, &uid, &bool_value, &int_value, &text_value)
+			var int_value sql.NullInt64
+			var bool_value sql.NullBool
+			var date_time, date pq.NullTime
+			err := rows.Scan(&model.Id, &uid, &bool_value, &int_value, &text_value, &date_time, &date)
 			if err != nil {
 				log.Println(err)
 				http.Error(w, http.StatusText(500), 500)
 				return
 			}
 
-			log.Println(bool_value)
+			log.Println(date)
 
 			model.Uid = uid.String
 			model.Text = text_value.String
 			model.Int = int(int_value.Int64)
 			model.Bool = bool_value.Bool
-
+			model.DateTime = date_time.Time
+			model.Date = date.Time
+			model.DateText = date.Time.Format("2006-01-02")
 
 			models = append(models, model)
 		}
@@ -80,6 +83,20 @@ func psqlInsertHandler(db *sql.DB) http.Handler {
 			http.Error(w, http.StatusText(500), 500)
 			return
 		}
+
+		/*
+		   fmt.Println("# Deleting")
+		    stmt, err = db.Prepare("delete from userinfo where uid=$1")
+		    checkErr(err)
+
+		    res, err = stmt.Exec(lastInsertId)
+		    checkErr(err)
+
+		    affect, err = res.RowsAffected()
+		    checkErr(err)
+
+		    fmt.Println(affect, "rows changed")
+		*/
 
 		w.Header().Set("Content-Type", "application/json")
 		//json.NewEncoder(w).Encode(users)
