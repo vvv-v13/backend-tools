@@ -6,7 +6,6 @@ import (
 	_ "github.com/lib/pq"
 	"log"
 	"net/http"
-	"strconv"
 	"time"
 )
 
@@ -15,13 +14,11 @@ type Model struct {
 	Uid  string    `json:"uid"`
 	Date time.Time `json:"date"`
 	Text string    `json:"text"`
+	Int  int       `json:"int"`
+	Float  float32   `json:"float"`
+	Bool  bool   `json:"bool"`
 }
 
-//ToNullInt64 validates a sql.NullInt64 if incoming string evaluates to an integer, invalidates if it does not
-func ToNullInt64(s string) sql.NullInt64 {
-	i, err := strconv.Atoi(s)
-	return sql.NullInt64{Int64: int64(i), Valid: err == nil}
-}
 
 // PostgreSQL SELECT handler
 func psqlSelectHandler(db *sql.DB) http.Handler {
@@ -32,12 +29,12 @@ func psqlSelectHandler(db *sql.DB) http.Handler {
 			return
 		}
 
-		rows, err := db.Query(`SELECT id, uid, date, text_data FROM models LIMIT $1`, 5)
+		rows, err := db.Query(`SELECT id, uid, bool_value, int_value, text_value FROM models LIMIT $1`, 5)
 
 		if err != nil {
-			panic(err)
-			//http.Error(w, http.StatusText(500), 500)
-			//return
+			log.Println(err)
+			http.Error(w, http.StatusText(500), 500)
+			return
 		}
 
 		defer rows.Close()
@@ -46,19 +43,24 @@ func psqlSelectHandler(db *sql.DB) http.Handler {
 
 		for rows.Next() {
 			model := new(Model)
-			var uid, text sql.NullString
-                        var date sql.NullInt64
-			err := rows.Scan(&model.Id, &uid, &date, &text)
+			var uid, text_value sql.NullString
+                        var int_value sql.NullInt64
+                        var bool_value sql.NullBool
+
+			err := rows.Scan(&model.Id, &uid, &bool_value, &int_value, &text_value)
 			if err != nil {
-				panic(err)
-				//http.Error(w, http.StatusText(500), 500)
-				//return
+				log.Println(err)
+				http.Error(w, http.StatusText(500), 500)
+				return
 			}
 
-			log.Println(date)
+			log.Println(bool_value)
 
 			model.Uid = uid.String
-			model.Text = text.String
+			model.Text = text_value.String
+			model.Int = int(int_value.Int64)
+			model.Bool = bool_value.Bool
+
 
 			models = append(models, model)
 		}
