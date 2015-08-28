@@ -5,7 +5,7 @@ function escape(s) {
 }
 
 function psqSelectAll(req, res, next) {
-    var sql = "SELECT id, uid, bool_value, int_value, text_value, date_time, date, array_data FROM models LIMIT 5";
+    var sql = "SELECT id, uid, bool_value, int_value, text_value, date_time, date, array_data, json_data FROM models LIMIT 5";
     res.contentType('application/json');
 
     db.query(sql)

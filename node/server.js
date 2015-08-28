@@ -1,5 +1,5 @@
 var express = require('express'),
-    models = require('./models'),
+    models = require('./psql_handlers'),
     app = express();
     
 app.set('port', process.env.PORT || 8000);
