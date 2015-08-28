@@ -1,3 +1,6 @@
+### PostgreSQL test table
+
+```
 staging=# \d+ models
 
   Column    |           Type           |                      Modifiers                      | Storage  | Stats target | Description 
@@ -13,8 +16,9 @@ staging=# \d+ models
  date        | date                     |                                                     | plain    |              | 
  bool_value  | boolean                  |                                                     | plain    |              | 
 
+```
 
-
+```
 staging=# SELECT * FROM models;
  id |                 uid                  | int_value | float_value | text_value |   json_data    | array_data |           date_time           |    date    | bool_value 
 ----+--------------------------------------+-----------+-------------+------------+----------------+------------+-------------------------------+------------+------------
@@ -22,7 +26,7 @@ staging=# SELECT * FROM models;
   3 |                                      |           |             | bubu       | {}             | {4,2,6}    |                               |            | t
   2 |                                      |           |       7.443 |            | {"aaa": "bbb"} |            |                               | 2015-08-28 | f
 (3 rows)
+```
 
-
-
+### API
 curl -i http://127.0.0.1:8000/psql/select
