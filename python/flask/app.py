@@ -4,10 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects import postgresql
 
 
-
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://test@localhost:5432/test?client_encoding=utf8'
-
 
 db = SQLAlchemy(app)
 
@@ -25,7 +23,6 @@ class TestModel(db.Model):
     date = db.Column(db.Date)
     json_data = db.Column(postgresql.JSONB)
     array_data = db.Column(postgresql.ARRAY(db.Integer))
-
 
     def as_dict(self):
         return {
