@@ -3,7 +3,7 @@
 ```
 staging=# \d+ models
 
-  Column    |           Type           |                      Modifiers                      | Storage  | Stats target | Description 
+   Column    |           Type           |                      Modifiers                      | Storage  | Stats target | Description 
 -------------+--------------------------+-----------------------------------------------------+----------+--------------+-------------
  id          | integer                  | not null default nextval('models_id_seq'::regclass) | plain    |              | 
  uid         | uuid                     |                                                     | plain    |              | 
