@@ -11,7 +11,7 @@ import (
 func main() {
 
         // PostgreSQL Connection pool
-	db, err := sql.Open("postgres", "user=staging dbname=staging sslmode=disable port=5432 host=localhost password=")
+	db, err := sql.Open("postgres", "user=test dbname=test sslmode=disable port=5432 host=localhost password=")
 	if err != nil {
 		panic(err)
 	}
