@@ -14,8 +14,8 @@ import (
 type Model struct {
 	Id           int              `json:"id"`
 	Uid          string           `json:"uid"`
-	DateTime     time.Time        `json:"time"`
-	DateTimeText string           `json:"timeText"`
+	DateTime     time.Time        `json:"dateTime"`
+	DateTimeText string           `json:"dateTimeText"`
 	Date         time.Time        `json:"date"`
 	DateText     string           `json:"dateText"`
 	Text         string           `json:"text"`
@@ -83,7 +83,8 @@ func psqlSelectHandler(db *sql.DB) http.Handler {
 			model.Date = date.Time
 
 			if date_time.Valid == true {
-				model.DateTimeText = date_time.Time.Format("2006-01-02")
+				model.DateTime = date_time.Time
+				model.DateTimeText = date_time.Time.Format("2006-01-02 15:04:01")
 			}
 
 			if date.Valid == true {
