@@ -47,7 +47,7 @@ func psqlSelectHandler(db *sql.DB) http.Handler {
 			return
 		}
 
-		rows, err := db.Query(`SELECT id, uid, bool_value, int_value, text_value, date_time, date, array_data, json_data FROM models LIMIT $1`, 5)
+		rows, err := db.Query(`SELECT id, uid, bool_value, int_value, float_value, text_value, date_time, date, array_data, json_data FROM models LIMIT $1`, 5)
 
 		if err != nil {
 			log.Println(err)
@@ -63,10 +63,11 @@ func psqlSelectHandler(db *sql.DB) http.Handler {
 			model := new(Model)
 			var uid, text_value, array_data, json_data sql.NullString
 			var int_value sql.NullInt64
+			var float_value sql.NullFloat64
 			var bool_value sql.NullBool
 			var date_time, date pq.NullTime
 
-			err := rows.Scan(&model.Id, &uid, &bool_value, &int_value, &text_value, &date_time, &date, &array_data, &json_data)
+			err := rows.Scan(&model.Id, &uid, &bool_value, &int_value, &float_value, &text_value, &date_time, &date, &array_data, &json_data)
 			if err != nil {
 				log.Println(err)
 				http.Error(w, http.StatusText(500), 500)
@@ -76,6 +77,7 @@ func psqlSelectHandler(db *sql.DB) http.Handler {
 			model.Uid = uid.String
 			model.Text = text_value.String
 			model.Int = int(int_value.Int64)
+			model.Float = float32(float_value.Float64)
 			model.Bool = bool_value.Bool
 			model.DateTime = date_time.Time
 			model.Date = date.Time
