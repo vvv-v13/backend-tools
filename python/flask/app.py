@@ -46,12 +46,9 @@ class TestModel(db.Model):
 @app.route('/psql/select')
 def postgresql():
     resp = TestModel.as_dict_all() 
-
     resp = Response(response=ujson.dumps(resp), status=200, mimetype="application/json")
-    return(resp)
-    #return jsonify({'result': resp})
+    return resp
 
 
 if __name__ == '__main__':
     app.run(debug=True, host="127.0.0.1", port=8000)
-
