@@ -6,6 +6,8 @@ import (
 	"github.com/lib/pq"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -21,6 +23,19 @@ type Model struct {
 	Float        float32          `json:"float"`
 	Bool         bool             `json:"bool"`
 	JsonData     *json.RawMessage `json:"json"`
+	ArrayData    []int            `json:"array"`
+}
+
+func strToIntSlice(s string) []int {
+	r := strings.Trim(s, "{}")
+	a := make([]int, 0)
+	for _, t := range strings.Split(r, ",") {
+		i, err := strconv.Atoi(t)
+		if err == nil {
+			a = append(a, i)
+		}
+	}
+	return a
 }
 
 // PostgreSQL SELECT handler
@@ -46,13 +61,10 @@ func psqlSelectHandler(db *sql.DB) http.Handler {
 
 		for rows.Next() {
 			model := new(Model)
-			var uid, text_value sql.NullString
+			var uid, text_value, array_data, json_data sql.NullString
 			var int_value sql.NullInt64
 			var bool_value sql.NullBool
 			var date_time, date pq.NullTime
-			//array_data := make([]uint8, 0)
-			var array_data []uint8
-			var json_data sql.NullString
 
 			err := rows.Scan(&model.Id, &uid, &bool_value, &int_value, &text_value, &date_time, &date, &array_data, &json_data)
 			if err != nil {
@@ -60,8 +72,6 @@ func psqlSelectHandler(db *sql.DB) http.Handler {
 				http.Error(w, http.StatusText(500), 500)
 				return
 			}
-
-			// log.Println(array_data)
 
 			model.Uid = uid.String
 			model.Text = text_value.String
@@ -73,6 +83,7 @@ func psqlSelectHandler(db *sql.DB) http.Handler {
 			if date_time.Valid == true {
 				model.DateTimeText = date_time.Time.Format("2006-01-02")
 			}
+
 			if date.Valid == true {
 				model.DateText = date.Time.Format("2006-01-02")
 			}
@@ -81,6 +92,10 @@ func psqlSelectHandler(db *sql.DB) http.Handler {
 				var j *json.RawMessage
 				json.Unmarshal([]byte(json_data.String), &j)
 				model.JsonData = j
+			}
+
+			if array_data.Valid == true {
+				model.ArrayData = strToIntSlice(array_data.String)
 			}
 
 			models = append(models, model)
