@@ -1,8 +1,8 @@
 ### PostgreSQL test table
 
 ```
-staging=# \d+ models
-
+test=# \d+ models
+                                                        Table "public.models"
    Column    |           Type           |                      Modifiers                      | Storage  | Stats target | Description 
 -------------+--------------------------+-----------------------------------------------------+----------+--------------+-------------
  id          | integer                  | not null default nextval('models_id_seq'::regclass) | plain    |              | 
@@ -19,13 +19,14 @@ staging=# \d+ models
 ```
 
 ```
-staging=# SELECT * FROM models;
- id |                 uid                  | int_value | float_value | text_value |   json_data    | array_data |           date_time           |    date    | bool_value 
-----+--------------------------------------+-----------+-------------+------------+----------------+------------+-------------------------------+------------+------------
-  1 | c8cb5c0b-a42e-4490-8e3d-f617f439dc27 |         5 |             |            |                | {}         | 2015-08-28 07:49:48.904323+03 |            | 
-  3 |                                      |           |             | bubu       | {}             | {4,2,6}    |                               |            | t
-  2 |                                      |           |       7.443 |            | {"aaa": "bbb"} |            |                               | 2015-08-28 | f
+test=# select * from models;
+ id |                 uid                  | int_value | float_value | text_value |   json_data    | array_data |          date_time           |    date    | bool_value 
+----+--------------------------------------+-----------+-------------+------------+----------------+------------+------------------------------+------------+------------
+  1 | c8cb5c0b-a42e-4490-8e3d-f617f439dc27 |         5 |             |            |                | {}         | 2015-08-31 20:40:15.04813+03 |            | 
+  2 |                                      |           |             | bubu       | {}             | {4,2,6}    |                              |            | t
+  3 |                                      |           |       7.442 |            | {"aaa": "bbb"} |            |                              | 2015-08-31 | f
 (3 rows)
+
 ```
 
 ### API
