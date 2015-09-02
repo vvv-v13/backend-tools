@@ -9,8 +9,6 @@ import (
 	"time"
 )
 
-//type JSONRaw json.RawMessage
-
 type Model struct {
 	Id           int              `json:"id"`
 	Uid          string           `json:"uid"`
@@ -22,7 +20,7 @@ type Model struct {
 	Int          int              `json:"int"`
 	Float        float32          `json:"float"`
 	Bool         bool             `json:"bool"`
-        JsonData     *json.RawMessage          `json:"json"`
+	JsonData     *json.RawMessage `json:"json"`
 }
 
 // PostgreSQL SELECT handler
@@ -54,8 +52,8 @@ func psqlSelectHandler(db *sql.DB) http.Handler {
 			var date_time, date pq.NullTime
 			//array_data := make([]uint8, 0)
 			var array_data []uint8
-                        var json_data sql.NullString
-                        
+			var json_data sql.NullString
+
 			err := rows.Scan(&model.Id, &uid, &bool_value, &int_value, &text_value, &date_time, &date, &array_data, &json_data)
 			if err != nil {
 				log.Println(err)
@@ -80,10 +78,10 @@ func psqlSelectHandler(db *sql.DB) http.Handler {
 			}
 
 			if json_data.Valid == true {
-                            var j *json.RawMessage
-                            json.Unmarshal([]byte(json_data.String), &j)
-                            model.JsonData = j
-                        }
+				var j *json.RawMessage
+				json.Unmarshal([]byte(json_data.String), &j)
+				model.JsonData = j
+			}
 
 			models = append(models, model)
 		}
