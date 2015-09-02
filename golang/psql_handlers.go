@@ -9,6 +9,8 @@ import (
 	"time"
 )
 
+//type JSONRaw json.RawMessage
+
 type Model struct {
 	Id           int              `json:"id"`
 	Uid          string           `json:"uid"`
@@ -20,6 +22,7 @@ type Model struct {
 	Int          int              `json:"int"`
 	Float        float32          `json:"float"`
 	Bool         bool             `json:"bool"`
+        JsonData     *json.RawMessage          `json:"json"`
 }
 
 // PostgreSQL SELECT handler
@@ -51,8 +54,7 @@ func psqlSelectHandler(db *sql.DB) http.Handler {
 			var date_time, date pq.NullTime
 			//array_data := make([]uint8, 0)
 			var array_data []uint8
-                        var json_data []byte
-                        //var json_data *json.RawMessage
+                        var json_data sql.NullString
                         
 			err := rows.Scan(&model.Id, &uid, &bool_value, &int_value, &text_value, &date_time, &date, &array_data, &json_data)
 			if err != nil {
@@ -61,7 +63,7 @@ func psqlSelectHandler(db *sql.DB) http.Handler {
 				return
 			}
 
-			log.Println(array_data)
+			// log.Println(array_data)
 
 			model.Uid = uid.String
 			model.Text = text_value.String
@@ -69,7 +71,6 @@ func psqlSelectHandler(db *sql.DB) http.Handler {
 			model.Bool = bool_value.Bool
 			model.DateTime = date_time.Time
 			model.Date = date.Time
-                        //model.JsonData = json_data
 
 			if date_time.Valid == true {
 				model.DateTimeText = date_time.Time.Format("2006-01-02")
@@ -77,6 +78,12 @@ func psqlSelectHandler(db *sql.DB) http.Handler {
 			if date.Valid == true {
 				model.DateText = date.Time.Format("2006-01-02")
 			}
+
+			if json_data.Valid == true {
+                            var j *json.RawMessage
+                            json.Unmarshal([]byte(json_data.String), &j)
+                            model.JsonData = j
+                        }
 
 			models = append(models, model)
 		}
